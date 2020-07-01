@@ -5,6 +5,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 const winston = require('winston')
+const { v4: uuid } = require('uuid')
 
 const app = express()
 
@@ -43,13 +44,12 @@ const cards = [{
    // move to the next middleware
    next()
 })
-
 const morganOption = (NODE_ENV === 'production')
   ? 'tiny'
   : 'common';
-
 app.use(morgan(morganOption))
 app.use(helmet())
+app.use(express.json())
 app.get('/', (req, res) => {
    res.send('Hello, world!')
 })
@@ -88,7 +88,36 @@ app.get('/list/:id', (req, res) => {
    }
  
    res.json(list);
- });
+});
+
+app.post('/card', (req, res) => {
+   const { title, content } = req.body;
+   if (!title) {
+      logger.error('title is required');
+      return res
+         .status(400)
+         .send('invalid data');
+   }
+   if (!content) {
+      logger.error('Content is required');
+      res
+         .status(400)
+         .send('invalid data')
+   }
+   const id = uuid();
+   const card = {
+      id,
+      title,
+      content
+   }
+   cards.push(card);
+   logger.info(`Card with id ${id} created`);
+
+res
+  .status(201)
+  .location(`http://localhost:8000/card/${id}`)
+  .json(card);
+});
 app.use(function errorHandler(error, req, res, next) {
    let response
    if (NODE_ENV === 'production') {
