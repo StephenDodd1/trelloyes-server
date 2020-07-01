@@ -65,7 +65,6 @@ app.get('/card/:id', (req, res) => {
    const { id } = req.params;
    const card = cards.find(c => c.id == id);
  
-   // make sure we found a card
    if (!card) {
       logger.error(`Card with id ${id} not found.`);
       return res
@@ -79,7 +78,6 @@ app.get('/list/:id', (req, res) => {
    const { id } = req.params;
    const list = lists.find(li => li.id == id);
  
-   // make sure we found a list
    if (!list) {
      logger.error(`List with id ${id} not found.`);
      return res
@@ -118,6 +116,50 @@ res
   .location(`http://localhost:8000/card/${id}`)
   .json(card);
 });
+app.post('/list', (req, res) => {
+   const { header, cardIds = [] } = req.body;
+ 
+   if (!header) {
+     logger.error(`header is required`);
+     return res
+       .status(400)
+       .send('invalid data');
+   }
+ 
+   if (cardIds.length > 0) {
+      let valid = true;
+      cardIds.forEach(cid => {
+         const card = cards.find(c => c.id == cid);
+         if (!card) {
+            logger.error(`card with id ${cid} not found`);
+            valid = false;
+         }
+      });
+ 
+      if (!valid) {
+         return res
+            .status(400)
+            .send('invalid data');
+      }
+   }
+ 
+   const id = uuid();
+ 
+   const list = {
+     id,
+     header,
+     cardIds
+   };
+ 
+   lists.push(list);
+ 
+   logger.info(`List with id ${id} created`);
+ 
+   res
+     .status(201)
+     .location(`http://localhost:8000/list/${id}`)
+     .json({id});
+ });
 app.use(function errorHandler(error, req, res, next) {
    let response
    if (NODE_ENV === 'production') {
