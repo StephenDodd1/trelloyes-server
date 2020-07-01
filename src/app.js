@@ -12,7 +12,7 @@ const logger = winston.createLogger({
    level: 'info',
    format: winston.format.json(),
    transports: [
-      new.winston.transports.File({ filename: 'info.log' })
+      new winston.transports.File({ filename: 'info.log' })
    ]
 });
 
@@ -44,14 +44,22 @@ const cards = [{
    next()
 })
 
-//const morganOption = (NODE_ENV === 'production')
-  //? 'tiny'
-  //: 'common';
+const morganOption = (NODE_ENV === 'production')
+  ? 'tiny'
+  : 'common';
 
-app.use(morgan('dev'))
+app.use(morgan(morganOption))
 app.use(helmet())
 app.get('/', (req, res) => {
    res.send('Hello, world!')
+})
+app.get('/card', () => {
+   res
+      .json(cards);
+});
+app.get('/list', () => {
+   res
+      .json(lists)
 })
 app.use(function errorHandler(error, req, res, next) {
    let response
