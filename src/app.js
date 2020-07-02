@@ -175,6 +175,25 @@ app.delete('/list/:id', (req, res) => {
       .status(204)
       .end();
 });
+app.delete('/card/:id', (req, res) => {
+   const { id } = req.body;
+   const cardIndex = cards.findIndex(c => c.id == id);
+   if (cardIndex === -1) {
+      logger.error(`card with ${id} does not exist`);
+      return res
+         .status(404)
+         .send('not found');
+   }
+   list.forEach(list => {
+      const cardIds = list.cardIds.filter(cid => cid !== id);
+      list.cardIds = cardIds;
+   });
+   cards.splice(cardIndex, 1);
+   logger.info(`card with ${id} deleted`);
+   res
+      .status(200)
+      .end();
+})
 app.use(function errorHandler(error, req, res, next) {
    let response
    if (NODE_ENV === 'production') {
