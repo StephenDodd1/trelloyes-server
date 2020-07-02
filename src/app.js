@@ -146,9 +146,9 @@ app.post('/list', (req, res) => {
    const id = uuid();
  
    const list = {
-     id,
-     header,
-     cardIds
+      id,
+      header,
+      cardIds
    };
  
    lists.push(list);
@@ -156,10 +156,25 @@ app.post('/list', (req, res) => {
    logger.info(`List with id ${id} created`);
  
    res
-     .status(201)
-     .location(`http://localhost:8000/list/${id}`)
-     .json({id});
- });
+      .status(201)
+      .location(`http://localhost:8000/list/${id}`)
+      .json({id});
+});
+app.delete('/list/:id', (req, res) => {
+   const { id } = req.body;
+   const listIndex = lists.findIndex(li => li.id == id)
+   if (listIndex === -1) {
+      logger.error(`list with ${id} not found`);
+      return res
+         .status(400)
+         .send('not found')
+   }
+   lists.splice(listIndex, 1)
+   logger.info(`list with ${id} deleted`);
+   res
+      .status(204)
+      .end();
+});
 app.use(function errorHandler(error, req, res, next) {
    let response
    if (NODE_ENV === 'production') {

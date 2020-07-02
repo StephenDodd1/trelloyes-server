@@ -1,2 +1,6 @@
 {"message":"Unauthorized request to path: /","level":"error"}
 {"message":"Card with id 2 not found.","level":"error"}
+{"message":"Card with id 2422fe6c-715b-42a9-ba90-3185a93d04d0 created","level":"info"}
+{"message":"card with id 2422fe6c-715b-42a9-ba90-3185a93d04d0 not found","level":"error"}
+{"message":"Card with id 89e47827-4cf9-4fea-ad71-2d146ff444f4 created","level":"info"}
+{"message":"List with id 65eed9e9-32d1-437b-bc0e-5cc41bdf818a created","level":"info"}
